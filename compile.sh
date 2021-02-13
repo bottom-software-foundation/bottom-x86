@@ -1,0 +1,1 @@
+nasm -f elf32 encode.asm -o encode.o && ld -m elf_i386 encode.o -o encode
