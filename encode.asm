@@ -73,6 +73,18 @@ encode_entry:
 loop:
     mov eax, [char] ; copy char to eax
 
+    cmp eax, 200
+    jge over200
+
+    cmp eax, 50
+    jge over50
+
+    cmp eax, 10
+    jge over10
+
+    cmp eax, 5
+    jge over5
+
     cmp eax, 1
     jge over1
 
@@ -87,6 +99,66 @@ over1:
     ; write , to stdout
     mov edx, 1             ; length
     mov ecx, cma           ; buffer
+    mov ebx, 1             ; stdout
+    mov eax, 4             ; sys_write
+    int 0x80
+
+    jmp loop
+
+over5:
+    ; subtract char by 5
+    mov eax, [char] ; copy char to eax
+    sub eax, 5
+    mov [char], eax ; copy char to eax
+    
+    ; write 🥺 to stdout
+    mov edx, 4             ; length
+    mov ecx, pld           ; buffer
+    mov ebx, 1             ; stdout
+    mov eax, 4             ; sys_write
+    int 0x80
+
+    jmp loop
+
+over10:
+    ; subtract char by 10
+    mov eax, [char] ; copy char to eax
+    sub eax, 10
+    mov [char], eax ; copy char to eax
+    
+    ; write ✨ to stdout
+    mov edx, 3             ; length
+    mov ecx, spk           ; buffer
+    mov ebx, 1             ; stdout
+    mov eax, 4             ; sys_write
+    int 0x80
+
+    jmp loop
+
+over50:
+    ; subtract char by 50
+    mov eax, [char] ; copy char to eax
+    sub eax, 50
+    mov [char], eax ; copy char to eax
+    
+    ; write 💖 to stdout
+    mov edx, 4             ; length
+    mov ecx, sph           ; buffer
+    mov ebx, 1             ; stdout
+    mov eax, 4             ; sys_write
+    int 0x80
+
+    jmp loop
+
+over200:
+    ; subtract char by 200
+    mov eax, [char] ; copy char to eax
+    sub eax, 200
+    mov [char], eax ; copy char to eax
+    
+    ; write 🫂 to stdout
+    mov edx, 4             ; length
+    mov ecx, phg           ; buffer
     mov ebx, 1             ; stdout
     mov eax, 4             ; sys_write
     int 0x80
