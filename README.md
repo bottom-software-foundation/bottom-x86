@@ -18,12 +18,6 @@ Shut up.
 
 ### How do you use this?
 
-1. Pipe to stdin
-2. Shut up.
-
-### How do you build this?
-
-1. Shut up.
-2. Shut up.
+1. Run `assemble.sh` with `nasm` installed.
+2. Pipe to stdin
 3. Shut up.
-4. Run `assemble.sh` with `nasm` installed.
