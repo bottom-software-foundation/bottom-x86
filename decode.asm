@@ -32,15 +32,13 @@ _start:
     cmp eax, 0             ; exit if length equals 0
     je exit
 
-    mov ebx, [char]
-
-    cmp ebx, 240
+    cmp byte [char], 240
     je match240
 
-    cmp ebx, 226
+    cmp byte [char], 226
     je match226
 
-    cmp ebx, 44
+    cmp byte [char], 44
     je cma
 
     mov edx, 1             ; length
@@ -77,56 +75,48 @@ exit:
 match240: ; consumed: 240
     ; assert next byte is 159
     call read
-    mov ebx, [char]
-    cmp ebx, 159
+    cmp byte [char], 159
     jne _error
 
     ; read next byte
     call read
-    mov ebx, [char]
-
-    cmp ebx, 171
+    cmp byte [char], 171
     je phg
 
-    cmp ebx, 146
+    cmp byte [char], 146
     je sph
 
-    cmp ebx, 165
+    cmp byte [char], 165
     je pld
 
     ; assert that this is a seperator and continue to bsp
-    cmp ebx, 145
+    cmp byte [char], 145
     jne _error
 
 bsp: ; consumed: 240, 159, 145
     ; assert next byte is 137
     call read
-    mov ebx, [char]
-    cmp ebx, 137
+    cmp byte [char], 137
     jne _error
 
     ; assert next byte is 240
     call read
-    mov ebx, [char]
-    cmp ebx, 240
+    cmp byte [char], 240
     jne _error
 
     ; assert next byte is 159
     call read
-    mov ebx, [char]
-    cmp ebx, 159
+    cmp byte [char], 159
     jne _error
 
     ; assert next byte is 145
     call read
-    mov ebx, [char]
-    cmp ebx, 145
+    cmp byte [char], 145
     jne _error
 
     ; assert next byte is 136
     call read
-    mov ebx, [char]
-    cmp ebx, 136
+    cmp byte [char], 136
     jne _error
 
     ; reset sum and print to stdout
@@ -144,8 +134,7 @@ bsp: ; consumed: 240, 159, 145
 phg: ; consumed 240, 159, 171
     ; assert next byte is 130
     call read
-    mov ebx, [char]
-    cmp ebx, 130
+    cmp byte [char], 130
     jne _error
 
     ; add 200 to sum
@@ -158,8 +147,7 @@ phg: ; consumed 240, 159, 171
 sph: ; consumed 240, 159, 146
     ; assert next byte is 150
     call read
-    mov ebx, [char]
-    cmp ebx, 150
+    cmp byte [char], 150
     jne _error
 
     ; add 50 to sum
@@ -172,8 +160,7 @@ sph: ; consumed 240, 159, 146
 pld: ; consumed 240, 159, 165
     ; assert next byte is 186
     call read
-    mov ebx, [char]
-    cmp ebx, 186
+    cmp byte [char], 186
     jne _error
 
     ; add 5 to sum
@@ -186,39 +173,34 @@ pld: ; consumed 240, 159, 165
 match226: ; consumed: 226
     ; read next byte
     call read
-    mov ebx, [char]
 
     ; if current byte is 156, jmp to spk
-    cmp ebx, 156
+    cmp byte [char], 156
     je spk
 
     ; assert current byte is 157, then continue to heart
-    cmp ebx, 157
+    cmp byte [char], 157
     jne _error
 
 heart: ; consumed: 226, 157
     ; assert next byte is 164
     call read
-    mov ebx, [char]
-    cmp ebx, 164
+    cmp byte [char], 164
     jne _error
 
     ; assert next byte is 239
     call read
-    mov ebx, [char]
-    cmp ebx, 239
+    cmp byte [char], 239
     jne _error
 
     ; assert next byte is 184
     call read
-    mov ebx, [char]
-    cmp ebx, 184
+    cmp byte [char], 184
     jne _error
 
     ; assert next byte is 143
     call read
-    mov ebx, [char]
-    cmp ebx, 143
+    cmp byte [char], 143
     jne _error
 
     jmp _start
@@ -226,8 +208,7 @@ heart: ; consumed: 226, 157
 spk: ; consumed: 226, 156
     ; assert next byte is 168
     call read
-    mov ebx, [char]
-    cmp ebx, 168
+    cmp byte [char], 168
     jne _error
 
     ; add 10 to sum
