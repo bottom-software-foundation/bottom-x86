@@ -26,4 +26,4 @@ Shut up.
 1. Shut up.
 2. Shut up.
 3. Shut up.
-4. Run `compile.sh` with `nasm` installed.
+4. Run `assemble.sh` with `nasm` installed.

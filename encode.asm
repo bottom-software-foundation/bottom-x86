@@ -15,14 +15,6 @@ section .data
 section .text
 global _start
 _start:
-    ; temp hack
-    ;mov edx, 1             ; max length
-    ;mov ecx, buf           ; buffer
-    ;mov ebx, 0             ; stdin
-    ;mov eax, 3             ; sys_read
-    ;int 0x80
-
-main:
     ; read stdin into buffer of size 1
     mov edx, 1             ; max length
     mov ecx, char           ; buffer
@@ -62,7 +54,7 @@ add_byte_separator:
     mov eax, 4             ; sys_write
     int 0x80
 
-    jmp main
+    jmp _start
 
 encode_entry:
     ; if (char == 0) { jmp add_heart } else { push buf; continue to loop }
