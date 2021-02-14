@@ -1,6 +1,7 @@
 section .bss
-   char resb 1 ; allocate storage for current char
-   sum resb 1 ; allocate storage the sum
+   buf resb 4 ; allocate storage for asserting and checking characters
+   sum resb 1 ; allocate storage for sum
+   length resb 1 ; allocate storage for length argument
 
 section .data
     lf db 0xa ; regular newline
@@ -10,21 +11,21 @@ section .data
 section .text
 global _start
 read:
-    ; read stdin into buffer of size 1
-    mov edx, 1             ; max length
-    mov ecx, char          ; buffer
+    ; read stdin into buf
+    mov edx, [length]       ; length to read
+    mov ecx, buf           ; buffer
     mov ebx, 0             ; stdin
     mov eax, 3             ; sys_read
     int 0x80
 
-    cmp eax, 0             ; error if length equals 0
-    je _error
+    cmp eax, [length]      ; error if length equals doesn't equal length
+    jne _error
 
     ret
 _start:
     ; read stdin into buffer of size 1
     mov edx, 1             ; max length
-    mov ecx, char          ; buffer
+    mov ecx, buf          ; buffer
     mov ebx, 0             ; stdin
     mov eax, 3             ; sys_read
     int 0x80
@@ -32,16 +33,20 @@ _start:
     cmp eax, 0             ; exit if length equals 0
     je exit
 
-    cmp byte [char], 240
+    cmp byte [buf], 240
     je match240
 
-    cmp byte [char], 226
+    cmp byte [buf], 226
     je match226
 
-    cmp byte [char], 44
+    cmp byte [buf], 44
     je cma
+    nop
 
 _error:
+    mov byte eax, [buf]
+    mov byte ebx, [buf + 1]
+    nop
     mov edx, 17             ; length
     mov ecx, err            ; buffer
     mov ebx, 2             ; stderr
@@ -68,49 +73,48 @@ exit:
 
 match240: ; consumed: 240
     ; assert next byte is 159
+    mov byte [length], 3 ; specify 3 bytes to read
     call read
-    cmp byte [char], 159
+
+    cmp byte [buf], 159
     jne _error
 
     ; read next byte
-    call read
-    cmp byte [char], 171
+    cmp byte [buf + 1], 171
     je phg
 
-    cmp byte [char], 146
+    cmp byte [buf + 1], 146
     je sph
 
-    cmp byte [char], 165
+    cmp byte [buf + 1], 165
     je pld
 
     ; assert that this is a seperator and continue to bsp
-    cmp byte [char], 145
+    cmp byte [buf + 1], 145
     jne _error
 
 bsp: ; consumed: 240, 159, 145
     ; assert next byte is 137
-    call read
-    cmp byte [char], 137
+    cmp byte [buf + 2], 137
     jne _error
 
-    ; assert next byte is 240
+    mov byte [length], 4 ; specify 4 bytes to read
     call read
-    cmp byte [char], 240
+
+    ; assert next byte is 240
+    cmp byte [buf], 240
     jne _error
 
     ; assert next byte is 159
-    call read
-    cmp byte [char], 159
+    cmp byte [buf + 1], 159
     jne _error
 
     ; assert next byte is 145
-    call read
-    cmp byte [char], 145
+    cmp byte [buf + 2], 145
     jne _error
 
     ; assert next byte is 136
-    call read
-    cmp byte [char], 136
+    cmp byte [buf + 3], 136
     jne _error
 
     ; reset sum and print to stdout
@@ -127,8 +131,7 @@ bsp: ; consumed: 240, 159, 145
 
 phg: ; consumed 240, 159, 171
     ; assert next byte is 130
-    call read
-    cmp byte [char], 130
+    cmp byte [buf + 2], 130
     jne _error
 
     ; add 200 to sum
@@ -140,8 +143,7 @@ phg: ; consumed 240, 159, 171
 
 sph: ; consumed 240, 159, 146
     ; assert next byte is 150
-    call read
-    cmp byte [char], 150
+    cmp byte [buf + 2], 150
     jne _error
 
     ; add 50 to sum
@@ -153,8 +155,7 @@ sph: ; consumed 240, 159, 146
 
 pld: ; consumed 240, 159, 165
     ; assert next byte is 186
-    call read
-    cmp byte [char], 186
+    cmp byte [buf + 2], 186
     jne _error
 
     ; add 5 to sum
@@ -165,44 +166,43 @@ pld: ; consumed 240, 159, 165
     jmp _start
 
 match226: ; consumed: 226
-    ; read next byte
+    ; read next 2 bytes
+    mov byte [length], 2
     call read
 
     ; if current byte is 156, jmp to spk
-    cmp byte [char], 156
+    cmp byte [buf], 156
     je spk
 
     ; assert current byte is 157, then continue to heart
-    cmp byte [char], 157
+    cmp byte [buf], 157
     jne _error
 
 heart: ; consumed: 226, 157
-    ; assert next byte is 164
-    call read
-    cmp byte [char], 164
+    cmp byte [buf + 1], 164
     jne _error
 
-    ; assert next byte is 239
+    ; read next 3 bytes
+    mov byte [length], 3
     call read
-    cmp byte [char], 239
+
+    ; assert next byte is 239
+    cmp byte [buf], 239
     jne _error
 
     ; assert next byte is 184
-    call read
-    cmp byte [char], 184
+    cmp byte [buf + 1], 184
     jne _error
 
     ; assert next byte is 143
-    call read
-    cmp byte [char], 143
+    cmp byte [buf + 2], 143
     jne _error
 
     jmp _start
 
 spk: ; consumed: 226, 156
     ; assert next byte is 168
-    call read
-    cmp byte [char], 168
+    cmp byte [buf + 1], 168
     jne _error
 
     ; add 10 to sum
