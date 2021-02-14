@@ -41,12 +41,6 @@ _start:
     cmp byte [char], 44
     je cma
 
-    mov edx, 1             ; length
-    mov ecx, char           ; buffer
-    mov ebx, 1             ; stdout
-    mov eax, 4             ; sys_write
-    int 0x80
-
 _error:
     mov edx, 17             ; length
     mov ecx, err            ; buffer
